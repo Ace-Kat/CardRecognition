@@ -8,16 +8,16 @@ import java.util.ArrayList;
 
 public class EdgeDetection implements PixelFilter {
 
-    private double[][] sobelEdgeDetectionX = {{-1, -2, -1}, {0, 0, 0}, {1, 2, 1}};
-    private double[][] sobleEdgeDetectionY = {{1, 0, -1}, {2, 0, -2}, {1, 0, -1}};
-    private double[][] thinningX0 = {{0, -1, 255}, {0, 255, 255}, {0, -1, 255}};
-    private double[][] thinningY0 = {{-1, 255, -1}, {0, 255, 255}, {0, 0, -1}};
-    private double[][] thinningX90 = {{255, 255, 255}, {-1, 255, -1}, {0, 0, 0}};
-    private double[][] thinningY90 = {{-1, 255, -1}, {255, 255, 0}, {-1, 0, 0}};
-    private double[][] thinningX180 = {{255, -1, 0}, {255, 255, 0}, {255, -1, 0}};
-    private double[][] thinningY180 = {{-1, 0, 0}, {255, 255, 0}, {-1, 255, -1}};
-    private double[][] thinningX270 = {{0, 0, 0}, {-1, 255, -1}, {255, 255, 255}};
-    private double[][] thinningY270 = {{0, 0, -1}, {255, 255, 255}, {-1, 0, -1}};
+    private final double[][] sobelEdgeDetectionX = {{-1, -2, -1}, {0, 0, 0}, {1, 2, 1}};
+    private final double[][] sobleEdgeDetectionY = {{1, 0, -1}, {2, 0, -2}, {1, 0, -1}};
+    private final double[][] thinningX0 = {{0, -1, 255}, {0, 255, 255}, {0, -1, 255}};
+    private final double[][] thinningY0 = {{-1, 255, -1}, {0, 255, 255}, {0, 0, -1}};
+    private final double[][] thinningX90 = {{255, 255, 255}, {-1, 255, -1}, {0, 0, 0}};
+    private final double[][] thinningY90 = {{-1, 255, -1}, {255, 255, 0}, {-1, 0, 0}};
+    private final double[][] thinningX180 = {{255, -1, 0}, {255, 255, 0}, {255, -1, 0}};
+    private final double[][] thinningY180 = {{-1, 0, 0}, {255, 255, 0}, {-1, 255, -1}};
+    private final double[][] thinningX270 = {{0, 0, 0}, {-1, 255, -1}, {255, 255, 255}};
+    private final double[][] thinningY270 = {{0, 0, -1}, {255, 255, 255}, {-1, 0, -1}};
     /*  you can define others here */
 
     public EdgeDetection() {
@@ -36,20 +36,34 @@ public class EdgeDetection implements PixelFilter {
 //       blue = kernal(blue, sobelEdgeDetectionX, sobleEdgeDetectionY);
 
         grey = kernal(grey, sobelEdgeDetectionX, sobleEdgeDetectionY);
+
+//        System.out.println(countBlack( grey ) + " " + (grey.length*grey[0].length));
+
         thinning(grey, thinningX0);
-        thinning(grey, thinningY0);
-        thinning(grey, thinningX90);
-        thinning(grey, thinningY90);
-        thinning(grey, thinningX180);
-        thinning(grey, thinningY180);
-        thinning(grey, thinningX270);
-        thinning(grey, thinningY270);
+        //thinning(grey, thinningY0);
+        //thinning(grey, thinningX90);
+        //thinning(grey, thinningY90);
+        //thinning(grey, thinningX180);
+        //thinning(grey, thinningY180);
+        //thinning(grey, thinningX270);
+        //thinning(grey, thinningY270);
 
 
 
 //        img.setColorChannels(red, green, blue);
         img.setPixels(grey);
         return img;
+    }
+
+    private int countBlack(short[][] grey) {
+        int count = 0;
+        for (int r = 0; r < grey.length; r++) {
+            for (int c = 0; c < grey[0].length; c++) {
+                if (grey[r][c] == 0)  count++;
+            }
+        }
+
+        return count;
     }
 
     private short[][] kernal(short[][] img, double[][] Gx, double[][] Gy) {
@@ -78,8 +92,8 @@ public class EdgeDetection implements PixelFilter {
                     }
                 }
                 output = Math.sqrt(outputx*outputx+outputy*outputy);
-//                if(output <= 100) output = 0;
-//                if(output > 200) output = 255;
+                if(output <= 100) output = 0;
+                if(output > 200) output = 255;
                 blank[row][col] = (short)(output);
 
             }
@@ -90,9 +104,39 @@ public class EdgeDetection implements PixelFilter {
 
     private void thinning(short[][] img, double[][] Tx){
 
+        for (int row = 0; row < img.length-3 ; row ++) {
+            for (int col = 0; col < img[0].length-3; col++) {
 
+                int counter = 0;
+
+                for (int i = 0; i < 3; i++) {
+                    for (int j = 0; j < 3; j++) {
+//                        System.out.println(img[row+i][col+j]);
+                        if(img[row+i][col+j] == Tx[i][j]){
+                            counter++;
+                        }
+                    }
+                }
+
+                for (int i = 0; i < 3; i++) {
+                    for (int j = 0; j < 3; j++) {
+                        img[row+i][col+j] = 0;
+                    }
+                }
+
+//                System.out.println(counter);
+
+                if(counter > 6){
+                    System.out.println("set pixel white");
+                    img[row+1][col+1] = 255;
+                }
+
+            }
+        }
 
     }
 
 
-}
+
+    }
+
