@@ -5,6 +5,8 @@ public class RunMe {
         // --== Load an image to filter ==--
 //        DisplayWindow.showFor("images/SetCard4boxes.jpeg", 800, 600, "EdgeDetection");
 
+//         DisplayWindow.showFor("images/image4.jpg", 800, 600, "EdgeDetection");
+
         // --== Determine your input interactively with menus ==--
         DisplayWindow.getInputInteractively(800,600);
     }
